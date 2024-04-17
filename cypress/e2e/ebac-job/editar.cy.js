@@ -1,28 +1,34 @@
-describe('Testes da Agenda de Contatos', () => {
-  beforeEach(() => {
-    cy.visit('https://agenda-contatos-react.vercel.app/');
-    cy.contains('gian Souza', {
-      timeout: 10000
-    }).should('be.visible').as('contatoGianSouza');
-  });
+describe('Testes para a página de contatos', () => {
+    beforeEach(() => {
+        cy.visit('https://agenda-contatos-react.vercel.app')
+    })
 
-  it('Deve editar um contato existente', () => {
-    const novoNome = 'Novo Nome';
-    const novoTelefone = '987654321';
+    it('Deve veriricar se há formulario', () => {
+        cy.get('input').should('have.length', 3)
 
-    cy.get('@contatoGianSouza').scrollIntoView().then(() => {
-      cy.get('@contatoGianSouza').parent().parent().within(() => {
-        cy.get('button.edit', {
-          timeout: 10000
-        }).should('be.visible').click();
-      });
-    });
+        cy.screenshot('tela-formulario')
+    })
 
-    cy.get('input[placeholder="Nome"]').should('be.visible').clear().type(novoNome);
-    cy.get('input[placeholder="Telefone"]').should('be.visible').clear().type(novoTelefone);
-    cy.get('button.salvar').click();
+    it('Deve preencher o formulário de inscrição', () => {
+        cy.get('input[placeholder="Nome"]').type('Matheus Aveiro')
+        cy.get('input[placeholder="E-mail"]').type('matheusaveirofagundes@gmail.com')
+        cy.get('input[placeholder="Telefone"]').type('53981067380')
 
-    cy.contains(novoNome).should('be.visible');
-    cy.contains(novoTelefone).should('be.visible');
-  });
-});
+        cy.screenshot('tela-formulario-preenchido')
+
+        cy.get('.adicionar').click()
+
+        cy.contains('li', 'Matheus Aveiro')
+
+        cy.screenshot('tela-contato-adicionado')
+    })
+
+    it('Deve editar o contato', () => {
+        cy.contains('li', 'Matheus Aveiro').closest('.contato').find('.edit').click()
+        cy.get('input[placeholder="Nome"]').type(' EDITADO')
+        cy.get('.alterar').click()
+        cy.contains('li', 'Matheus Aveiro EDITADO')
+
+        cy.screenshot('tela-contato-editado')
+    })
+})

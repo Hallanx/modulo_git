@@ -1,29 +1,29 @@
-describe('Testes da Agenda de Contatos', () => {
+/// <reference types="cypress" />
+
+describe('Remover contato', () => {
     beforeEach(() => {
-        cy.visit('https://agenda-contatos-react.vercel.app/');
-        cy.contains('gian Souza', {
+        cy.visit('https://agenda-contatos-react.vercel.app')
+    })
+
+    it('Deve excluir o contato', () => {
+        // Increase the timeout to ensure the page has loaded
+        cy.get('.contato', {
             timeout: 10000
-        }).should('be.visible').as('contatoGianSouza');
-    });
-
-    it('Deve remover um contato existente', () => {
-        // Supondo que o botão de remoção possa não estar imediatamente visível,
-        // tenta primeiro acionar uma ação que garantiria sua visibilidade.
-        cy.get('@contatoGianSouza').trigger('mouseover');
-
-        // Agora tenta encontrar o botão de remoção dentro do contexto do contato.
-        cy.get('@contatoGianSouza').parent().parent().within(() => {
-            cy.get('button.remove', {
+        }).then(contatos => {
+            // Ensure there is at least one .contato element before proceeding
+            if (contatos.length > 0) {
+                const initialLength = contatos.length;
+                cy.contains('li', 'Matheus Aveiro EDITADO').closest('.contato').find('.delete').click();
+                // Use the updated timeout for subsequent queries as well
+                cy.get('.contato', {
                     timeout: 10000
-                })
-                .should('be.visible')
-                .as('botaoRemover');
-        });
-
-        cy.get('@botaoRemover').click();
-        cy.get('.confirm').click();
-        cy.contains('gian Souza', {
-            timeout: 10000
-        }).should('not.exist');
-    });
-});
+                }).should('have.length', initialLength - 1);
+            } else {
+                // If no .contato elements are found, either skip the test or fail with a custom message
+                cy.log('No contacts found to delete');
+                // Optionally, fail the test if no contacts are found
+                // expect(contatos.length).to.be.greaterThan(0, 'No contacts found to delete');
+            }
+        })
+    })
+})

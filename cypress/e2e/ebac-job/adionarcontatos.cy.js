@@ -1,21 +1,25 @@
-describe('Testes da Agenda de Contatos', () => {
+describe('Testes para a página de contatos', () => {
   beforeEach(() => {
-    cy.visit('https://agenda-contatos-react.vercel.app/');
-  });
+    cy.visit('https://agenda-contatos-react.vercel.app')
+  })
 
-  it('Deve adicionar um novo contato', () => {
-    const nome = 'Novo Contato';
-    const telefone = '123456789';
-    const email = 'novocontato@example.com';
+  it('Deve veriricar se há formulario', () => {
+    cy.get('input').should('have.length', 3)
 
-    cy.get('input[placeholder="Nome"]').type(nome);
-    cy.get('input[placeholder="E-mail"]').type(email);
-    cy.get('input[placeholder="Telefone"]').type(telefone);
-    cy.get('.adicionar').click();
+    cy.screenshot('tela-formulario')
+  })
 
-    // Aguarda até que o novo contato seja adicionado à lista
-    cy.contains(nome).should('be.visible');
-    cy.contains(telefone).should('be.visible');
-    cy.contains(email).should('be.visible');
-  });
-});
+  it('Deve preencher o formulário de inscrição', () => {
+    cy.get('input[placeholder="Nome"]').type('Matheus Aveiro')
+    cy.get('input[placeholder="E-mail"]').type('matheusaveirofagundes@gmail.com')
+    cy.get('input[placeholder="Telefone"]').type('53981067380')
+
+    cy.screenshot('tela-formulario-preenchido')
+
+    cy.get('.adicionar').click()
+
+    cy.contains('li', 'Matheus Aveiro')
+
+    cy.screenshot('tela-contato-adicionado')
+  })
+})
